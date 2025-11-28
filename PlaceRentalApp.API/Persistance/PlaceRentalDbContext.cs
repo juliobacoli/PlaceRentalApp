@@ -16,4 +16,5 @@ public class PlaceRentalDbContext
     public List<PlaceAmenity> PlaceAmenities { get; set; }
     public List<PlaceBook> PlaceBooks { get; set; }
     public List<User> Users { get; set; }
+    //public List<Comm> MyProperty { get; set; }
 }
