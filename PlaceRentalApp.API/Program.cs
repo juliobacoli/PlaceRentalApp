@@ -1,10 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using PlaceRentalApp.API.Middlewares;
 using PlaceRentalApp.API.Persistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<PlaceRentalDbContext>();
-
+builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseInMemoryDatabase("PlaceRentalDb"));
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 

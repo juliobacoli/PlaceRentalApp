@@ -5,6 +5,8 @@ namespace PlaceRentalApp.API.Entities;
 
 public class Place : BaseEntity
 {
+    protected Place() { }
+
     public Place(string title, string description, decimal dailyPrice, Address address, int allowedNumberPerson, bool allowPets, int createdBy)
         : base()
     {
@@ -19,6 +21,7 @@ public class Place : BaseEntity
         Status = PlaceStatus.Active;
         Books = [];
         Amenities = [];
+        Comments = [];
     }
 
     public string Title { get; private set; }
@@ -32,6 +35,8 @@ public class Place : BaseEntity
     public PlaceStatus Status { get; private set; }
     public List<PlaceBook> Books { get; private set; }
     public List<PlaceAmenity> Amenities { get; private set; }
+    public List<PlaceComment> Comments { get; private set; }
+
 
     public void Update(string title, string description, decimal dailyPrice)
     {

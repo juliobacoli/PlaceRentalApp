@@ -70,6 +70,7 @@ public class PlacesController : ControllerBase
             );
 
         _context.Places.Add(place);
+        _context.SaveChanges();
         return CreatedAtAction(nameof(GetById), new { id = place.Id }, model);
     }
 
@@ -81,7 +82,10 @@ public class PlacesController : ControllerBase
         if (place == null)
             return NotFound();
 
-        place.Update(model.Title, model.Description, model.DailyPrice);
+        //place.Update(model.Title, model.Description, model.DailyPrice);
+        _context.Places.Update(place);
+        _context.SaveChanges();
+
         return NoContent();
     }
 
@@ -96,6 +100,8 @@ public class PlacesController : ControllerBase
         var amenity = new PlaceAmenity(id, model.Description);
 
         _context.PlaceAmenities.Add(amenity);
+        _context.SaveChanges();
+
         return NoContent();
     }
 
@@ -107,7 +113,10 @@ public class PlacesController : ControllerBase
         if (place == null)
             return NotFound();
 
-        place.SetAsDeleted();
+        //place.SetAsDeleted();
+
+        _context.Places.Update(place);
+        _context.SaveChanges();
 
         return NoContent();
     }
@@ -129,9 +138,9 @@ public class PlacesController : ControllerBase
             model.Comments
         );
         
-        place.Books.Add(book);
-
         _context.PlaceBooks.Add(book);
+        _context.SaveChanges();
+
         return NoContent();
     }
 
@@ -139,17 +148,17 @@ public class PlacesController : ControllerBase
     public IActionResult PostComment(int id, CreateCommentInputModel model)
     {
         var place = _context.Places.SingleOrDefault(p => p.Id == id && !p.IsDeleted);
-
         if (place == null)
             return NotFound();
 
-        var comment = new CreateCommentInputModel
-        {
-            IdUser = model.IdUser,
-            Comments = model.Comments
-        };
+        var user = _context.Users.SingleOrDefault(u => u.Id == model.IdUser);
+        if (user == null)
+            return BadRequest("User not found.");
 
-        //place.Comment.Add(comment);
+        var comment = new PlaceComment(model.IdUser, id, model.Comments);
+
+        _context.Comments.Add(comment);
+        _context.SaveChanges();
 
         return NoContent();
     }

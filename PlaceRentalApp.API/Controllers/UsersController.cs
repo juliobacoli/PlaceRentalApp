@@ -35,6 +35,8 @@ public class UsersController : ControllerBase
         );
 
         _context.Users.Add(user);
+        _context.SaveChanges();
+
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, model);
     }
 }
