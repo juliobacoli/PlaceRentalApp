@@ -82,7 +82,7 @@ public class PlacesController : ControllerBase
         if (place == null)
             return NotFound();
 
-        //place.Update(model.Title, model.Description, model.DailyPrice);
+        place.Update(model.Title, model.Description, model.DailyPrice);
         _context.Places.Update(place);
         _context.SaveChanges();
 
@@ -113,7 +113,7 @@ public class PlacesController : ControllerBase
         if (place == null)
             return NotFound();
 
-        //place.SetAsDeleted();
+        place.SetAsDeleted();
 
         _context.Places.Update(place);
         _context.SaveChanges();
