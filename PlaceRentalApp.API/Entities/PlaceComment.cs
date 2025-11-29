@@ -1,4 +1,6 @@
-﻿namespace PlaceRentalApp.API.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace PlaceRentalApp.API.Entities;
 
 public class PlaceComment : BaseEntity
 {
@@ -11,9 +13,12 @@ public class PlaceComment : BaseEntity
     }
 
     public int IdUser { get; private set; }
+
     public User User { get; private set; }
 
     public int IdPlace { get; private set; }
+
+    [JsonIgnore]
     public Place Place { get; private set; }
 
     public string Comment { get; private set; }
