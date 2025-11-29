@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PlaceRentalApp.API.Entities;
 using PlaceRentalApp.API.Models;
 using PlaceRentalApp.API.Persistance;
@@ -15,7 +16,6 @@ public class PlacesController : ControllerBase
     {
         _context = context;
     }
-
 
     [HttpGet]
     public IActionResult Get(string search, DateTime startDate, DateTime endDate)
@@ -36,7 +36,11 @@ public class PlacesController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        var place = _context.Places.SingleOrDefault(p => p.Id == id && !p.IsDeleted);
+        var place = _context.Places
+                .Include(p => p.Books)
+                .Include(p => p.Amenities)
+                .Include(p => p.Comments)
+                .SingleOrDefault(p => p.Id == id && !p.IsDeleted);
 
         if (place == null)
             return NotFound();
