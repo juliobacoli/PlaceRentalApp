@@ -18,17 +18,18 @@ public class PlacesController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get(string search, DateTime startDate, DateTime endDate)
+    public IActionResult Get(string? search, DateTime startDate, DateTime endDate)
     {
         var availablePlaces = _context
             .Places
             .Where(p =>
-                p.Title.Contains(search) &&
+                (string.IsNullOrEmpty(search) || p.Title.Contains(search)) &&
                 !p.Books.Any(b =>
                     (startDate >= b.StartDate && startDate <= b.EndDate) ||
                     (endDate >= b.StartDate && endDate <= b.EndDate)     ||
                     (startDate <= b.StartDate && endDate >= b.EndDate))  &&
-                !p.IsDeleted);
+                !p.IsDeleted)
+            .ToList();
 
         return Ok(availablePlaces);
     }
@@ -133,15 +134,20 @@ public class PlacesController : ControllerBase
         if (place == null)
             return NotFound();
 
+        var user = _context.Users.SingleOrDefault(u => u.Id == model.IdUser && !u.IsDeleted);
+
+        if (user == null)
+            return BadRequest("User not found.");
+
         var book = new PlaceBook
         (
-            id,
             model.IdUser,
+            id,
             model.StartDate,
             model.EndDate,
             model.Comments
         );
-        
+
         _context.PlaceBooks.Add(book);
         _context.SaveChanges();
 
@@ -170,6 +176,11 @@ public class PlacesController : ControllerBase
     [HttpPost("{id}/photos")]
     public IActionResult PostPlacePhoto(int id, IFormFile file)
     {
+        var exists = _context.Places.Any(p => p.Id == id && !p.IsDeleted);
+
+        if (!exists)
+            return NotFound();
+
         var description = $"File: {file.FileName}, Size: {file.Length}";
 
         using var ms = new MemoryStream();

@@ -1,0 +1,308 @@
+### Variáveis
+@baseUrl = http://localhost:5221/api
+@userId = 1
+@placeId = 8
+
+###############################################
+### 1. USERS
+###############################################
+
+### 1.1 Criar Usuário
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "fullName": "João Silva",
+  "email": "joao.silva@email.com",
+  "birthDate": "1990-05-15"
+}
+
+### 1.2 Criar Segundo Usuário (para testes de reserva)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "fullName": "Maria Santos",
+  "email": "maria.santos@email.com",
+  "birthDate": "1985-08-20"
+}
+
+### 1.3 Consultar Usuário
+GET {{baseUrl}}/users/{{userId}}
+
+### 1.4 Consultar Usuário Inexistente (deve retornar 404)
+GET {{baseUrl}}/users/9999
+
+###############################################
+### 2. PLACES
+###############################################
+
+### 2.1 Criar Lugar
+POST {{baseUrl}}/places
+Content-Type: application/json
+
+{
+  "title": "Casa na Praia",
+  "description": "Linda casa de frente para o mar com 3 quartos",
+  "dailyPrice": 350.00,
+  "address": {
+    "street": "Av. Beira Mar",
+    "number": "1500",
+    "zipCode": "88010-000",
+    "district": "Centro",
+    "city": "Florianópolis",
+    "state": "SC",
+    "country": "Brasil"
+  },
+  "allowedNumberPerson": 6,
+  "allowPets": true,
+  "createdBy": 1
+}
+
+### 2.2 Criar Segundo Lugar
+POST {{baseUrl}}/places
+Content-Type: application/json
+
+{
+  "title": "Apartamento no Centro",
+  "description": "Apartamento moderno com 2 quartos",
+  "dailyPrice": 200.00,
+  "address": {
+    "street": "Rua das Flores",
+    "number": "100",
+    "zipCode": "01010-000",
+    "district": "Centro",
+    "city": "São Paulo",
+    "state": "SP",
+    "country": "Brasil"
+  },
+  "allowedNumberPerson": 4,
+  "allowPets": false,
+  "createdBy": 1
+}
+
+### 2.3 Listar Lugares (sem filtros)
+GET {{baseUrl}}/places?search=&startDate=2025-01-01&endDate=2025-01-10
+
+### 2.4 Listar Lugares (com busca por título)
+GET {{baseUrl}}/places?search=Praia&startDate=2025-01-01&endDate=2025-01-10
+
+### 2.5 Listar Lugares (busca vazia - teste bug corrigido)
+GET {{baseUrl}}/places?startDate=2025-01-01&endDate=2025-01-10
+
+### 2.6 Consultar Lugar por ID
+GET {{baseUrl}}/places/{{placeId}}
+
+### 2.7 Consultar Lugar Inexistente
+GET {{baseUrl}}/places/9999
+
+### 2.8 Atualizar Lugar
+PUT {{baseUrl}}/places/{{placeId}}
+Content-Type: application/json
+
+{
+  "title": "Casa na Praia - ATUALIZADO",
+  "description": "Linda casa de frente para o mar com 3 quartos e piscina",
+  "dailyPrice": 400.00
+}
+
+###############################################
+### 3. AMENITIES
+###############################################
+
+### 3.1 Adicionar Comodidade - WiFi
+POST {{baseUrl}}/places/{{placeId}}/amenities
+Content-Type: application/json
+
+{
+  "description": "WiFi de alta velocidade"
+}
+
+### 3.2 Adicionar Comodidade - Piscina
+POST {{baseUrl}}/places/{{placeId}}/amenities
+Content-Type: application/json
+
+{
+  "description": "Piscina aquecida"
+}
+
+### 3.3 Adicionar Comodidade - Ar Condicionado
+POST {{baseUrl}}/places/{{placeId}}/amenities
+Content-Type: application/json
+
+{
+  "description": "Ar condicionado em todos os quartos"
+}
+
+### 3.4 Adicionar Comodidade em Lugar Inexistente (deve retornar 404)
+POST {{baseUrl}}/places/9999/amenities
+Content-Type: application/json
+
+{
+  "description": "WiFi"
+}
+
+###############################################
+### 4. BOOKS
+###############################################
+
+### 4.1 Criar Reserva
+POST {{baseUrl}}/places/{{placeId}}/books
+Content-Type: application/json
+
+{
+  "idUser": 1,
+  "idPlace": 1,
+  "startDate": "2025-02-01",
+  "endDate": "2025-02-05",
+  "comments": "Chegada prevista para 14h"
+}
+
+### 4.2 Criar Segunda Reserva (período diferente)
+POST {{baseUrl}}/places/{{placeId}}/books
+Content-Type: application/json
+
+{
+  "idUser": 2,
+  "idPlace": 1,
+  "startDate": "2025-02-10",
+  "endDate": "2025-02-15",
+  "comments": "Preciso de berço para bebê"
+}
+
+### 4.3 Criar Reserva com Usuário Inexistente (deve retornar BadRequest)
+POST {{baseUrl}}/places/{{placeId}}/books
+Content-Type: application/json
+
+{
+  "idUser": 9999,
+  "idPlace": 1,
+  "startDate": "2025-03-01",
+  "endDate": "2025-03-05",
+  "comments": "Teste"
+}
+
+### 4.4 Criar Reserva em Lugar Inexistente (deve retornar NotFound)
+POST {{baseUrl}}/places/9999/books
+Content-Type: application/json
+
+{
+  "idUser": 1,
+  "idPlace": 9999,
+  "startDate": "2025-03-01",
+  "endDate": "2025-03-05",
+  "comments": "Teste"
+}
+
+### 4.5 Verificar Disponibilidade - Período Ocupado
+GET {{baseUrl}}/places?search=&startDate=2025-02-01&endDate=2025-02-05
+
+### 4.6 Verificar Disponibilidade - Período Livre
+GET {{baseUrl}}/places?search=&startDate=2025-03-01&endDate=2025-03-05
+
+###############################################
+### 5. COMMENTS
+###############################################
+
+### 5.1 Adicionar Comentário
+POST {{baseUrl}}/places/{{placeId}}/comments
+Content-Type: application/json
+
+{
+  "idUser": 1,
+  "comments": "Lugar incrível! Vista maravilhosa e muito confortável."
+}
+
+### 5.2 Adicionar Segundo Comentário
+POST {{baseUrl}}/places/{{placeId}}/comments
+Content-Type: application/json
+
+{
+  "idUser": 2,
+  "comments": "Excelente localização, próximo a restaurantes e mercados."
+}
+
+### 5.3 Comentário com Usuário Inexistente (deve retornar BadRequest)
+POST {{baseUrl}}/places/{{placeId}}/comments
+Content-Type: application/json
+
+{
+  "idUser": 9999,
+  "comments": "Teste"
+}
+
+### 5.4 Comentário em Lugar Inexistente (deve retornar NotFound)
+POST {{baseUrl}}/places/9999/comments
+Content-Type: application/json
+
+{
+  "idUser": 1,
+  "comments": "Teste"
+}
+
+### 5.5 Consultar Lugar com Comentários
+GET {{baseUrl}}/places/{{placeId}}
+
+###############################################
+### 6. PHOTOS
+###############################################
+
+### 6.1 Upload de Foto (necessita multipart/form-data - usar Postman/Insomnia)
+# POST {{baseUrl}}/places/{{placeId}}/photos
+# Content-Type: multipart/form-data
+#
+# Arquivo: selecionar uma imagem
+
+### 6.2 Upload em Lugar Inexistente (deve retornar NotFound)
+# POST {{baseUrl}}/places/9999/photos
+# Content-Type: multipart/form-data
+#
+# Arquivo: selecionar uma imagem
+
+###############################################
+### 7. DELETE
+###############################################
+
+### 7.1 Deletar Lugar (soft delete)
+DELETE {{baseUrl}}/places/2
+
+### 7.2 Verificar Lugar Deletado (deve retornar 404)
+GET {{baseUrl}}/places/2
+
+### 7.3 Deletar Lugar Inexistente (deve retornar 404)
+DELETE {{baseUrl}}/places/9999
+
+### 7.4 Listar Lugares (não deve incluir deletados)
+GET {{baseUrl}}/places?search=&startDate=2025-01-01&endDate=2025-01-10
+
+###############################################
+### 8. TESTES DE EDGE CASES
+###############################################
+
+### 8.1 Buscar com String Vazia
+GET {{baseUrl}}/places?search=&startDate=2025-01-01&endDate=2025-01-10
+
+### 8.2 Buscar com Termo que Não Existe
+GET {{baseUrl}}/places?search=XYZ123&startDate=2025-01-01&endDate=2025-01-10
+
+### 8.3 Criar Lugar com Usuário Inexistente
+POST {{baseUrl}}/places
+Content-Type: application/json
+
+{
+  "title": "Teste",
+  "description": "Descrição",
+  "dailyPrice": 100.00,
+  "address": {
+    "street": "Rua Teste",
+    "number": "1",
+    "zipCode": "00000-000",
+    "district": "Teste",
+    "city": "Teste",
+    "state": "TS",
+    "country": "Brasil"
+  },
+  "allowedNumberPerson": 2,
+  "allowPets": false,
+  "createdBy": 9999
+}

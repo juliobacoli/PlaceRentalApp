@@ -4,11 +4,19 @@ using PlaceRentalApp.API.Persistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseInMemoryDatabase("PlaceRentalDb"));
+var connectionString = builder.Configuration.GetConnectionString("PlaceRental");
+
+//builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseInMemoryDatabase("PlaceRentalDb"));
+builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseSqlServer(connectionString));
+
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
