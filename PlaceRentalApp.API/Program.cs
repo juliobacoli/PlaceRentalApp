@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("PlaceRental");
 
+if (string.IsNullOrEmpty(connectionString))
+    throw new InvalidOperationException("Connection string 'PlaceRental' not found.");
+
 //builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseInMemoryDatabase("PlaceRentalDb"));
 builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseSqlServer(connectionString));
 
