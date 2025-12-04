@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PlaceRentalApp.API.Persistance;
+using PlaceRentalApp.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace PlaceRentalApp.API.Migrations
+namespace PlaceRentalApp.Infrastructure.Migrations
 {
     [DbContext(typeof(PlaceRentalDbContext))]
-    [Migration("20251130012824_InitialCreate")]
-    partial class InitialCreate
+    partial class PlaceRentalDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +22,7 @@ namespace PlaceRentalApp.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.Place", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.Place", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +66,7 @@ namespace PlaceRentalApp.API.Migrations
                     b.ToTable("Places");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.PlaceAmenity", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.PlaceAmenity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,7 +94,7 @@ namespace PlaceRentalApp.API.Migrations
                     b.ToTable("PlaceAmenities");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.PlaceBook", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.PlaceBook", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,7 +133,7 @@ namespace PlaceRentalApp.API.Migrations
                     b.ToTable("PlaceBooks");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.PlaceComment", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.PlaceComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,7 +166,7 @@ namespace PlaceRentalApp.API.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.User", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -199,15 +196,15 @@ namespace PlaceRentalApp.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.Place", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.Place", b =>
                 {
-                    b.HasOne("PlaceRentalApp.API.Entities.User", "User")
+                    b.HasOne("PlaceRentalApp.Core.Entities.User", "User")
                         .WithMany("Places")
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("PlaceRentalApp.API.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("PlaceRentalApp.Core.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<int>("PlaceId")
                                 .HasColumnType("int");
@@ -261,24 +258,24 @@ namespace PlaceRentalApp.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.PlaceAmenity", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.PlaceAmenity", b =>
                 {
-                    b.HasOne("PlaceRentalApp.API.Entities.Place", null)
+                    b.HasOne("PlaceRentalApp.Core.Entities.Place", null)
                         .WithMany("Amenities")
                         .HasForeignKey("IdPlace")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.PlaceBook", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.PlaceBook", b =>
                 {
-                    b.HasOne("PlaceRentalApp.API.Entities.Place", "Place")
+                    b.HasOne("PlaceRentalApp.Core.Entities.Place", "Place")
                         .WithMany("Books")
                         .HasForeignKey("IdPlace")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PlaceRentalApp.API.Entities.User", "User")
+                    b.HasOne("PlaceRentalApp.Core.Entities.User", "User")
                         .WithMany("Books")
                         .HasForeignKey("IdUser")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -289,15 +286,15 @@ namespace PlaceRentalApp.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.PlaceComment", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.PlaceComment", b =>
                 {
-                    b.HasOne("PlaceRentalApp.API.Entities.Place", "Place")
+                    b.HasOne("PlaceRentalApp.Core.Entities.Place", "Place")
                         .WithMany("Comments")
                         .HasForeignKey("IdPlace")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PlaceRentalApp.API.Entities.User", "User")
+                    b.HasOne("PlaceRentalApp.Core.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("IdUser")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -308,7 +305,7 @@ namespace PlaceRentalApp.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.Place", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.Place", b =>
                 {
                     b.Navigation("Amenities");
 
@@ -317,7 +314,7 @@ namespace PlaceRentalApp.API.Migrations
                     b.Navigation("Comments");
                 });
 
-            modelBuilder.Entity("PlaceRentalApp.API.Entities.User", b =>
+            modelBuilder.Entity("PlaceRentalApp.Core.Entities.User", b =>
                 {
                     b.Navigation("Books");
 

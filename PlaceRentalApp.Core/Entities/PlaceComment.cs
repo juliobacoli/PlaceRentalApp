@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PlaceRentalApp.API.Entities;
+namespace PlaceRentalApp.Core.Entities;
 
 public class PlaceComment : BaseEntity
 {

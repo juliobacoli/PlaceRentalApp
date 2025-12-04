@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="PlaceRentalApp.API/PlaceRentalApp.API.csproj" />
+  <Project Path="PlaceRentalApp.Application/PlaceRentalApp.Application.csproj" Id="a175dca5-24b8-4f24-b165-fb1723af3d71" />
+  <Project Path="PlaceRentalApp.Core/PlaceRentalApp.Core.csproj" Id="b0b6af27-eeff-4a4b-849b-392a448ed8ea" />
+  <Project Path="PlaceRentalApp.Infrastructure/PlaceRentalApp.Infrastructure.csproj" Id="658ab611-17ab-4895-ac67-41077eaaee5b" />
 </Solution>

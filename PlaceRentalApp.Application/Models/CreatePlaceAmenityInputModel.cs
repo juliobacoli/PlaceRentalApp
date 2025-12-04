@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PlaceRentalApp.API.Models;
+namespace PlaceRentalApp.Application.Models;
 
 public class CreatePlaceAmenityInputModel
 {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PlaceRentalApp.API.Middlewares;
-using PlaceRentalApp.API.Persistance;
+using PlaceRentalApp.Application.Services;
+using PlaceRentalApp.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,8 @@ var connectionString = builder.Configuration.GetConnectionString("PlaceRental");
 if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Connection string 'PlaceRental' not found.");
 
-//builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseInMemoryDatabase("PlaceRentalDb"));
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddDbContext<PlaceRentalDbContext>(o => o.UseSqlServer(connectionString));
 
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
