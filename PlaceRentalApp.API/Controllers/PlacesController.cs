@@ -19,30 +19,43 @@ public class PlacesController : ControllerBase
     [HttpGet]
     public IActionResult Get(string? search, DateTime startDate, DateTime endDate)
     {
-        var availablePlaces = _placeService.GetAllAvailable(search, startDate, endDate);
+        var result = _placeService.GetAllAvailable(search, startDate, endDate);
 
-        return Ok(availablePlaces);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        var place = _placeService.GetById(id);
+        var result = _placeService.GetById(id);
 
-        return Ok(place);
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
     }
 
     [HttpPost]
     public IActionResult Post(CreatePlaceInputModel model)
     {
-        var id = _placeService.Insert(model);
-        return CreatedAtAction(nameof(GetById), new { id }, model);
+        var result = _placeService.Insert(model);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Data }, model);
     }
 
     [HttpPut("{id}")]
     public IActionResult Put(int id, UpdatePlaceInputModel model)
     {
-        _placeService.Update(id, model);
+        var result = _placeService.Update(id, model);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return NoContent();
     }
@@ -50,7 +63,10 @@ public class PlacesController : ControllerBase
     [HttpPost("{id}/amenities")]
     public IActionResult PostAmenity(int id, CreatePlaceAmenityInputModel model)
     {
-        _placeService.InsertAmenity(id,model);
+        var result = _placeService.InsertAmenity(id, model);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return NoContent();
     }
@@ -58,7 +74,10 @@ public class PlacesController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        _placeService.Detele(id);
+        var result = _placeService.Detele(id);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return NoContent();
     }
@@ -66,7 +85,10 @@ public class PlacesController : ControllerBase
     [HttpPost("{id}/books")]
     public IActionResult PostBook(int id, CreateBookInputModel model)
     {
-        _placeService.Book(id, model);
+        var result = _placeService.Book(id, model);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return NoContent();
     }
@@ -74,7 +96,10 @@ public class PlacesController : ControllerBase
     [HttpPost("{id}/comments")]
     public IActionResult PostComment(int id, CreateCommentInputModel model)
     {
-        _placeService.AddComment(id, model);
+        var result = _placeService.AddComment(id, model);
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return NoContent();
     }
