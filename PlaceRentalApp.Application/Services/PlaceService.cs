@@ -81,6 +81,7 @@ public class PlaceService : IPlaceService
                 .Include(p => p.Books)
                 .Include(p => p.Amenities)
                 .Include(p => p.Comments)
+                .Include(p => p.User)
                 .SingleOrDefault(p => p.Id == id && !p.IsDeleted);
 
         if (place == null)
