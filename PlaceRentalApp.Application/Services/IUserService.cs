@@ -7,8 +7,8 @@ namespace PlaceRentalApp.Application.Services;
 
 public interface IUserService
 {
-    User? GetById(int id);
-    int Insert(CreateUserInputModel model);
+    ResultViewModel<User?> GetById(int id);
+    ResultViewModel<int> Insert(CreateUserInputModel model);
 }
 
 public class UserService : IUserService
@@ -19,17 +19,17 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public User? GetById(int id)
+    public ResultViewModel<User?> GetById(int id)
     {
         var user = _context.Users.SingleOrDefault(u => u.Id == id && !u.IsDeleted);
 
         if (user == null)
-            throw new NotFoundException();
+            return ResultViewModel<User?>.Error("Usuário não encontrado");
 
-        return user;
+        return ResultViewModel<User?>.Success(user);
     }
 
-    public int Insert(CreateUserInputModel model)
+    public ResultViewModel<int> Insert(CreateUserInputModel model)
     {
         var user = new User(
                    model.FullName,
@@ -40,6 +40,6 @@ public class UserService : IUserService
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        return user.Id;
+        return ResultViewModel<int>.Success(user.Id);
     }
 }

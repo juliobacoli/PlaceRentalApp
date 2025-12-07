@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using PlaceRentalApp.Application.Exceptions;
 using PlaceRentalApp.Application.Models;
 using PlaceRentalApp.Core.Entities;
 using PlaceRentalApp.Core.ValueObjects;
@@ -14,17 +13,17 @@ public class PlaceService : IPlaceService
     {
         _context = context;
     }
-    public void Book(int id, CreateBookInputModel model)
+    public ResultViewModel Book(int id, CreateBookInputModel model)
     {
         var exists = _context.Places.Any(p => p.Id == id && !p.IsDeleted);
 
         if (!exists)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Place não encontrado");
 
         var user = _context.Users.Any(u => u.Id == model.IdUser && !u.IsDeleted);
 
         if (!user)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Usuário não encontrado");
 
         var book = new PlaceBook
         (
@@ -37,37 +36,46 @@ public class PlaceService : IPlaceService
 
         _context.PlaceBooks.Add(book);
         _context.SaveChanges();
+
+        return ResultViewModel.Success();
     }
 
-    public void Detele(int id)
+    public ResultViewModel Detele(int id)
     {
         var place = _context.Places.SingleOrDefault(p => p.Id == id && !p.IsDeleted);
 
         if (place == null)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Place não encontrado");
 
         place.SetAsDeleted();
 
         _context.Places.Update(place);
         _context.SaveChanges();
+
+        return ResultViewModel.Success();
     }
 
-    public List<Place> GetAllAvailable(string search, DateTime? startDate, DateTime? endDate)
+    public ResultViewModel<List<PlaceViewModel>> GetAllAvailable(string search, DateTime? startDate, DateTime? endDate)
     {
         var availablePlaces = _context
             .Places
+            .Include(p => p.User)
             .Where(p =>
                 (string.IsNullOrEmpty(search) || p.Title.Contains(search)) &&
                 !p.Books.Any(b =>
                     (startDate >= b.StartDate && startDate <= b.EndDate) ||
                     (endDate >= b.StartDate && endDate <= b.EndDate) ||
                     (startDate <= b.StartDate && endDate >= b.EndDate)) &&
-                !p.IsDeleted);
+                !p.IsDeleted).ToList();
 
-        return availablePlaces.ToList();
+        var model = availablePlaces
+            .Select(PlaceViewModel.FromEntity)
+            .ToList();
+
+        return ResultViewModel<List<PlaceViewModel>>.Success(model);
     }
 
-    public Place? GetById(int id)
+    public ResultViewModel<PlaceDetailsViewModel?> GetById(int id)
     {
         var place = _context.Places
                 .Include(p => p.Books)
@@ -76,12 +84,12 @@ public class PlaceService : IPlaceService
                 .SingleOrDefault(p => p.Id == id && !p.IsDeleted);
 
         if (place == null)
-            throw new NotFoundException();
+            return ResultViewModel<PlaceDetailsViewModel?>.Error("Place não encontrado");
 
-        return place;
+        return ResultViewModel<PlaceDetailsViewModel?>.Success(PlaceDetailsViewModel.FromEntity(place));
     }
 
-    public int Insert(CreatePlaceInputModel model)
+    public ResultViewModel<int> Insert(CreatePlaceInputModel model)
     {
         var adress = new Address
         (
@@ -108,49 +116,55 @@ public class PlaceService : IPlaceService
         _context.Places.Add(place);
         _context.SaveChanges();
 
-        return place.Id;
+        return ResultViewModel<int>.Success(place.Id);
     }
 
-    public void InsertAmenity(int id, CreatePlaceAmenityInputModel model)
+    public ResultViewModel InsertAmenity(int id, CreatePlaceAmenityInputModel model)
     {
         var exists = _context.Places.Any(p => p.Id == id && !p.IsDeleted);
 
         if (!exists)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Place não encontrado");
 
         var amenity = new PlaceAmenity(id, model.Description);
 
         _context.PlaceAmenities.Add(amenity);
         _context.SaveChanges();
+
+        return ResultViewModel.Success();
     }
 
-    public void Update(int id, UpdatePlaceInputModel model)
+    public ResultViewModel Update(int id, UpdatePlaceInputModel model)
     {
         var place = _context.Places.SingleOrDefault(p => p.Id == id && !p.IsDeleted);
 
         if (place == null)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Place não encontrado");
 
         place.Update(model.Title, model.Description, model.DailyPrice);
         _context.Places.Update(place);
         _context.SaveChanges();
+
+        return ResultViewModel.Success();
     }
 
-    public void AddComment(int id, CreateCommentInputModel model)
+    public ResultViewModel AddComment(int id, CreateCommentInputModel model)
     {
         var place = _context.Places.SingleOrDefault(p => p.Id == id && !p.IsDeleted);
 
         if (place == null)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Place não encontrado");
 
         var user = _context.Users.SingleOrDefault(u => u.Id == model.IdUser);
 
         if (user == null)
-            throw new NotFoundException();
+            return ResultViewModel.Error("Usuário não encontrado");
 
         var comment = new PlaceComment(model.IdUser, id, model.Comments);
 
         _context.Comments.Add(comment);
         _context.SaveChanges();
+
+        return ResultViewModel.Success();
     }
 }

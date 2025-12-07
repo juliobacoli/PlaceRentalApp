@@ -5,12 +5,12 @@ namespace PlaceRentalApp.Application.Services;
 
 public interface IPlaceService
 {
-    void AddComment(int id, CreateCommentInputModel model);
-    void Book(int id, CreateBookInputModel model);
-    List<Place> GetAllAvailable(string search, DateTime? startDate, DateTime? endDate);
-    Place? GetById(int id);
-    int Insert(CreatePlaceInputModel model);
-    void InsertAmenity(int id, CreatePlaceAmenityInputModel model);
-    void Update(int id, UpdatePlaceInputModel model);
-    void Detele(int id);
+    ResultViewModel AddComment(int id, CreateCommentInputModel model);
+    ResultViewModel Book(int id, CreateBookInputModel model);
+    ResultViewModel<List<PlaceViewModel>> GetAllAvailable(string search, DateTime? startDate, DateTime? endDate);
+    ResultViewModel<PlaceDetailsViewModel?> GetById(int id);
+    ResultViewModel<int> Insert(CreatePlaceInputModel model);
+    ResultViewModel InsertAmenity(int id, CreatePlaceAmenityInputModel model);
+    ResultViewModel Update(int id, UpdatePlaceInputModel model);
+    ResultViewModel Detele(int id);
 }
